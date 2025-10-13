@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#db
+/src/_db/posts.db-shm
+/src/_db/posts.db-wal
