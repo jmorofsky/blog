@@ -1,4 +1,3 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap'); */
 @import "tailwindcss";
 
 @theme {
@@ -11,6 +10,12 @@
   --color-nav: #0D0D0D;
 }
 
-html {
-  font-family: 'Noto Sans';
+::selection {
+  background-color: #673AB7;
+  color: #E0E0E0;
+}
+
+::-moz-selection {
+  background-color: #673AB7;
+  color: #E0E0E0;
 }
