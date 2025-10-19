@@ -49,4 +49,4 @@ next-env.d.ts
 posts.db
 
 # post content
-/src/assets/post_images
+/src/_assets/post_images
