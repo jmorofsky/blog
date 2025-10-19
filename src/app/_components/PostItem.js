@@ -1,0 +1,20 @@
+import { _formatDate } from '../_common'
+
+export default function PostItem(props) {
+    const title = props.post.Title
+    const desc = props.post.Description
+    const date = props.post.Date
+    const edited = props.post.Edited
+
+    return (
+        <div className="inline-flex w-160">
+            <div className='flex flex-col mt-3 w-full'>
+                <p className='font-mono text-secondary-text text-xs mb-3'>🗓 {_formatDate(date)}</p>
+                <p className='text-primary-text text-xl mb-3 font-semibold'>
+                    <span className='hover:underline hover:text-gold-accent hover:opacity-80 transition duration-100'>{title}</span>
+                </p>
+                <p className='text-secondary-text'>{desc}</p>
+            </div>
+        </div>
+    )
+}

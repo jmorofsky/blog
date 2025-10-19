@@ -40,7 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#db
+# vscode
+.vscode
+
+# db
 /src/_db/posts.db-shm
 /src/_db/posts.db-wal
 posts.db
+
+# post content
+/src/assets/post_images
