@@ -7,8 +7,8 @@ export default function LatestPost(props) {
     const edited = props.post.Edited
 
     return (
-        <div className="flex flex-col row-span-2 
-        p-3 rounded-lg hover:bg-[#282828] hover:ring-4 hover:ring-[#202020] transition duration-150">
+        <div className="flex flex-col row-span-2 p-3 
+        rounded-lg hover:bg-[#282828] hover:ring-4 hover:ring-[#202020] transition duration-150">
             <h1
                 className='text-primary-text text-xl font-semibold whitespace-nowrap'>
                 LATEST POST

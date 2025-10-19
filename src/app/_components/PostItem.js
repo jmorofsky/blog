@@ -7,7 +7,7 @@ export default function PostItem(props) {
     const edited = props.post.Edited
 
     return (
-        <div className="inline-flex w-160">
+        <div className="inline-flex w-160 pl-3 pr-3">
             <div className='flex flex-col mt-3 w-full'>
                 <p className='font-mono text-secondary-text text-xs mb-3'>🗓 {_formatDate(date)}</p>
                 <p className='text-primary-text text-xl mb-3 font-semibold'>
