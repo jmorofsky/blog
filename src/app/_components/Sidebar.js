@@ -8,7 +8,7 @@ export default function Sidebar() {
     return (
         <div className='fixed top-0 h-full bg-nav p-2 border-r border-border shadow-sm shadow-secondary-text w-60 max-[1000px]:hidden'>
             <div className='flex flex-col mt-25 items-center'>
-                <Image className='rounded-full pointer-events-none pr-7 pl-7' src={profile} alt='Jason Morofsky' />
+                <Image className='h-35 w-35 rounded-full pointer-events-none ring-3 ring-border' src={profile} alt='Jason Morofsky' />
                 <p className="mt-4 text-primary-text font-mono">JASON MOROFSKY</p>
 
                 <p className='mt-7 pl-4 pr-4 text-secondary-text text-[15px] text-justify'>

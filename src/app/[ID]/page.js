@@ -6,7 +6,7 @@ export default async function Post({ params }) {
     const db = new Database("./src/_db/posts.db", { fileMustExist: true })
     db.pragma('journal_mode = WAL')
 
-    const selectedPost = db.prepare(`SELECT * FROM posts WHERE ID = ${ID}`).get()
+    const selectedPost = db.prepare(`SELECT Title, Date, Edited FROM posts WHERE ID = ${ID}`).get()
     if (selectedPost == undefined) {
         return (
             <div className='text-center text-primary-text mt-[30vh] m-auto'>

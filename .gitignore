@@ -50,3 +50,6 @@ posts.db
 
 # post content
 /src/_assets/post_images
+
+# post creation
+/src/app/new
