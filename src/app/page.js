@@ -17,7 +17,7 @@ export default function App() {
     })
 
     return (
-        <div className='m-auto mt-25 mb-20 w-[90vw] grid min-[1700px]:grid-cols-[repeat(2,_650px)] 
+        <div className='m-auto mt-25 mb-20 grid min-[1700px]:grid-cols-[repeat(2,_650px)] 
         min-[2400px]:grid-cols-[repeat(3,_650px)] justify-center items-center gap-20'>
             {postElements}
         </div>
