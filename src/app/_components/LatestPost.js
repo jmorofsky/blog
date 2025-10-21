@@ -1,10 +1,12 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { formatDate } from '../_common'
 
 export default function LatestPost(props) {
     const title = props.post.Title
     const date = props.post.Date
     const edited = props.post.Edited
+    const ID = props.post.ID
 
     return (
         <div className="flex flex-col row-span-2 p-3 
@@ -29,13 +31,15 @@ export default function LatestPost(props) {
                 }
             </p>
 
-            <Image
-                src={require(`../../_assets/post_images/${props.post.ID}.png`)}
-                alt=''
-                className="h-120 w-160 mb-4 rounded-sm object-cover shadow-md shadow-accent"
-                priority={false}
-            />
-            <p className='text-primary-text text-3xl font-semibold'>{title}</p>
+            <Link href={`/${ID}`}>
+                <Image
+                    src={require(`../../_assets/post_images/${props.post.ID}.png`)}
+                    alt=''
+                    className="h-120 w-160 mb-4 rounded-sm object-cover shadow-md shadow-accent"
+                    priority={false}
+                />
+                <p className='text-primary-text text-3xl font-semibold'>{title}</p>
+            </Link>
         </div>
     )
 }
