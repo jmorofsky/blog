@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin '@tailwindcss/typography';
 
 @theme {
   --color-background: #121212;
@@ -18,4 +19,20 @@
 ::-moz-selection {
   background-color: #673AB7;
   color: #E0E0E0;
+}
+
+.prose h1, h2, h3, h4, h5, h6, a {
+  color: #E0E0E0;
+}
+
+.prose p, strong, em, span, ol, ul {
+  color: #B0B0B0;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose em {
+  font-style: italic;
 }
