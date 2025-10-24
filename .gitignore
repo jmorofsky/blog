@@ -51,6 +51,3 @@ posts.db
 # post content
 /src/_assets/post_images
 /src/_assets/post_md
-
-# post creation
-/src/app/new
