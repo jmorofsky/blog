@@ -21,13 +21,13 @@
   color: #E0E0E0;
 }
 
-.prose h1, h2, h3, h4, h5, h6, a {
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6, .prose a {
   color: #E0E0E0;
   width: 65vw;
   max-width: 1000px;
 }
 
-.prose p, strong, em, span, ol, ul {
+.prose p, .prose strong, .prose em, .prose span, .prose ol, .prose ul {
   color: #B0B0B0;
   width: 65vw;
   max-width: 1000px;
