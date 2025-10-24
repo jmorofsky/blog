@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3'
 import { promises as fs } from 'fs'
+import Image from 'next/image'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
@@ -37,19 +38,24 @@ export default async function Post({ params }) {
     }
 
     return (
-        <>
-            <div className="flex flex-col mt-24 mb-15 px-15 gap-3">
+            <div className="flex flex-col m-auto mt-24 mb-15 px-15 gap-3 max-w-[1120px]">
                 <p className='text-secondary-text font-mono text-sm'>
                     🗓 {date}{edited && <em className='text-accent'>&nbsp;&nbsp;[Edited: {edited}]</em>}
                 </p>
                 <hr className='text-gold-accent' />
 
-                <h1 className='text-primary-text text-5xl mb-5'>{title}</h1>
+                <h1 className='text-primary-text text-5xl mb-5 max-[575px]:text-3xl'>{title}</h1>
+
+                <Image
+                    src={require(`../../_assets/post_images/${ID}.png`)}
+                    alt=''
+                    className="max-h-160 mb-4 rounded-sm object-cover shadow-md shadow-accent max-[425px]:hidden"
+                    priority={false}
+                />
 
                 <div className='prose'>
                     <Markdown remarkPlugins={[remarkGfm]}>{postContent}</Markdown>
                 </div>
             </div>
-        </>
     )
 }
