@@ -44,10 +44,11 @@ next-env.d.ts
 .vscode
 
 # db
-/src/_db/posts.db-shm
-/src/_db/posts.db-wal
-posts.db
+/src/_db/
 
 # post content
 /src/_assets/post_images
 /src/_assets/post_md
+
+# password
+/src/app/new/password.env
