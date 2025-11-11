@@ -23,14 +23,10 @@
 
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6, .prose a {
   color: #E0E0E0;
-  width: 65vw;
-  max-width: 1000px;
 }
 
 .prose p, .prose strong, .prose em, .prose span, .prose ol, .prose ul {
   color: #B0B0B0;
-  width: 65vw;
-  max-width: 1000px;
 }
 
 .prose strong {

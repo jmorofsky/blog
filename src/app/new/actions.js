@@ -3,6 +3,7 @@
 import Database from 'better-sqlite3'
 import { headers } from 'next/headers'
 import bcrypt from 'bcrypt'
+import { promises as fs } from 'fs'
 
 import { loadEnvFile } from 'node:process'
 loadEnvFile('./src/app/new/password.env')
@@ -17,7 +18,7 @@ export async function validatePassword(previousState, formData) {
 
         const isBanned = !!db.prepare(`SELECT * FROM bannedIPs WHERE IP = ('${ip}')`).get()
         if (isBanned) {
-            return { valid: false, error: false, banned: true, attempts: 0 }
+            return { valid: false, error: false, banned: true, attempts: 0, hash: null }
         }
 
         const currentDate = Date.now()
@@ -27,7 +28,7 @@ export async function validatePassword(previousState, formData) {
             ipData = { IP: ip, attempts: 0, timestamp: currentDate }
         } else if (ipData.attempts > 5) {
             db.prepare(`INSERT INTO bannedIPs VALUES('${ip}')`).run()
-            return { valid: false, error: false, banned: true, attempts: ipData.attempts }
+            return { valid: false, error: false, banned: true, attempts: ipData.attempts, hash: null }
         }
 
         const plaintext_password = formData.get("password")
@@ -35,23 +36,85 @@ export async function validatePassword(previousState, formData) {
 
         const isMatch = await bcrypt.compare(plaintext_password, hashed_password)
         if (isMatch) {
-            db.prepare(`UPDATE attempts SET attempts = 0, timestamp = ${currentDate} WHERE IP = ('${ip}')`).run()
-            // send 2fa email
-            return { valid: true, error: false, banned: false, attempts: 0 }
+            db.prepare(
+                `UPDATE attempts SET attempts = 0, 
+                timestamp = ${currentDate} WHERE IP = ('${ip}')`
+            ).run()
+            return { valid: true, error: false, banned: false, attempts: 0, hash: hashed_password }
         } else {
-            const twentyFourHoursInMs = 24 * 60 * 60 * 1000
-            const threshold = currentDate - twentyFourHoursInMs
-
-            if (ipData.timestamp < threshold) {
-                db.prepare(`UPDATE attempts SET attempts = 1, timestamp = ${currentDate} WHERE IP = ('${ip}')`).run()
-                return { valid: false, error: false, banned: false, attempts: 1 }
-            } else {
-                const newAttemptCount = ipData.attempts + 1
-                db.prepare(`UPDATE attempts SET attempts = ${newAttemptCount}, timestamp = ${currentDate} WHERE IP = ('${ip}')`).run()
-                return { valid: false, error: false, banned: false, attempts: newAttemptCount }
-            }
+            const newAttemptCount = ipData.attempts + 1
+            db.prepare(
+                `UPDATE attempts SET attempts = ${newAttemptCount}, 
+                timestamp = ${currentDate} WHERE IP = ('${ip}')`
+            ).run()
+            return { valid: false, error: false, banned: false, attempts: newAttemptCount, hash: null }
         }
     } catch (error) {
-        return { valid: false, error: true, banned: false, attempts: previousState.attempts }
+        return { valid: false, error: true, banned: false, attempts: previousState.attempts, hash: null }
+    }
+}
+
+export async function getNewPostID() {
+    const db = new Database("./src/_db/posts.db", { fileMustExist: true })
+    db.pragma('journal_mode = WAL')
+
+    try {
+        const latest_id = db.prepare('SELECT ID FROM posts ORDER BY ID DESC').get()
+
+        if (latest_id == undefined) {
+            return 0
+        } else {
+            return latest_id.ID + 1
+        }
+    } catch (error) {
+        return null
+    }
+}
+
+export async function createNewPost(postData) {
+    try {
+        if (postData.hash != process.env.password_hash) {
+            return 'error'
+        }
+
+        const id = postData.id
+        const title = postData.title
+        const description = postData.description
+        const image = postData.image
+        const content = postData.content
+        
+        const today = new Date()
+        let month = today.getMonth() + 1
+        let day = today.getDate()
+        let year = today.getFullYear()
+
+        month = month < 10 ? '0' + month : month
+        day = day < 10 ? '0' + day : day
+
+        const date = `${month}/${day}/${year}`
+
+        if (!id || !title || !description || !image || !content) {
+            return 'error'
+        }
+
+        const db = new Database("./src/_db/posts.db", { fileMustExist: true })
+        db.pragma('journal_mode = WAL')
+
+        const md_path = `./src/_assets/post_md/${id}.md`
+        await fs.writeFile(md_path, content)
+
+        const arrayBuffer = await image.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+
+        const img_path = `./src/_assets/post_images/${id}.png`
+
+        await fs.writeFile(img_path, buffer)
+
+        db.prepare(`INSERT INTO posts VALUES('${id}', '${title}', '${description}', '${date}', null)`).run()
+
+        return 'success'
+    } catch (error) {
+        console.log(error)
+        return 'error'
     }
 }

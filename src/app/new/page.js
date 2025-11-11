@@ -2,10 +2,11 @@
 
 import { useActionState } from "react"
 import { validatePassword } from "./actions"
+import NewPost from "./_components/NewPost"
 
-export default function NewPost() {
+export default function Validate() {
     const [passwordResponse, passwordAction, passwordPending] =
-        useActionState(validatePassword, { valid: false, error: false, banned: false, attempts: 0 })
+        useActionState(validatePassword, { valid: false, error: false, banned: false, attempts: 0, hash: null })
 
     if (!passwordResponse.valid) {
         return (
@@ -20,7 +21,14 @@ export default function NewPost() {
                         className="p-1 border-2"
                         style={{ outline: "none" }}
                     />
-                    
+
+                    {
+                        passwordResponse.attempts > 0 &&
+                        passwordResponse.attempts <= 6 &&
+                        !passwordResponse.banned &&
+                        !passwordResponse.error &&
+                        <p className="font-mono">Attempt: {passwordResponse.attempts}</p>
+                    }
                     {passwordResponse.error && <p className="font-mono text-red-600">Error</p>}
                     {passwordResponse.banned && <p className="font-mono text-red-600">Banned</p>}
                 </form>
@@ -29,6 +37,6 @@ export default function NewPost() {
     }
 
     return (
-        <p className="text-primary-text mt-25">valid</p>
+        <NewPost hash={passwordResponse.hash} />
     )
 }
