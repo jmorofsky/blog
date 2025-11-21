@@ -3,71 +3,119 @@
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useState, useEffect } from "react"
-import { getNewPostID, createNewPost } from "../actions"
+import { getNewPostID, createNewPost } from "../new/newActions"
+import { updatePost } from '../[ID]/edit/editActions'
 import { useRouter } from 'next/navigation'
+import ErrorPage from './ErrorPage'
 
-export default function NewPost(props) {
+
+export default function PostCreator(props) {
+    const isNewPost = !props.postData
     const hash = props.hash
     const router = useRouter()
 
-    const [newPostID, setNewPostID] = useState(null)
+    const [id, setId] = useState(null)
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
     const [image, setImage] = useState(null)
     const [content, setContent] = useState("")
-    const [saveLoading, setSaveLoading] = useState(false)
-    const [error, setError] = useState(false)
-    const [missingField, setMissingField] = useState(false) // false, "title", "desc", "image", "content"
-    const [saveError, setSaveError] = useState(false)
+    const [date, setDate] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
+    const [saveError, setSaveError] = useState("")
 
     useEffect(() => {
-        getNewPostID()
-            .then((result) => {
-                setNewPostID(result)
-            })
-            .catch((error) => {
-                setError(true)
-            })
+        if (isNewPost) {
+            getNewPostID()
+                .then((response) => {
+                    if (response == 'error') {
+                        setError("getNewPostID")
+                    } else {
+                        setId(response)
+                    }
+                })
+                .catch((error) => {
+                    setError("getNewPostID")
+                })
+        } else {
+            try {
+                const post = props.postData
+
+                setId(post.id)
+                setTitle(post.title)
+                setDescription(post.description)
+                setContent(post.content)
+                setDate(post.date)
+            } catch {
+                setError("useEffect")
+            }
+        }
     }, [])
 
     async function handleSaveClick() {
-        setSaveLoading(true)
-
         if (title == "") {
-            setMissingField("title")
-            setSaveLoading(false)
+            setSaveError("Missing Post Title")
             return
-        } else if (description == "") {
-            setMissingField("desc")
-            setSaveLoading(false)
+        }
+
+        if (description == "") {
+            setSaveError("Missing Post Description")
             return
-        } else if (image == null) {
-            setMissingField("image")
-            setSaveLoading(false)
+        }
+
+        if (isNewPost) {
+            if (image == null) {
+                setSaveError("Missing Post Image")
+                return
+            }
+
+            if (image.type !== "image/png") {
+                setSaveError("Invalid Image Format")
+                return
+            }
+        }
+
+        if (content == "") {
+            setSaveError("Missing Post Content")
             return
-        } else if (content == "") {
-            setMissingField("content")
-            setSaveLoading(false)
-            return
+        }
+
+        setSaveError("")
+        setLoading(true)
+
+        let resp;
+        if (isNewPost) {
+            const postData = {
+                id: id,
+                title: title,
+                description: description,
+                image: image,
+                content: content,
+                hash: hash
+            }
+
+            resp = await createNewPost(postData)
         } else {
-            setMissingField(false)
+            const postData = {
+                id: id,
+                title: title,
+                description: description,
+                content: content,
+                date: date,
+                hash: hash
+            }
+
+            if (image) {
+                postData.image = image
+            }
+
+            resp = await updatePost(postData)
         }
 
-        const postData = {
-            id: newPostID,
-            title: title,
-            description: description,
-            image: image,
-            content: content,
-            hash: hash
-        }
-
-        const resp = await createNewPost(postData)
-
-        setSaveLoading(false)
+        setLoading(false)
 
         if (resp == "error") {
-            setSaveError(true)
+            setSaveError("An Error Occurred")
         }
         if (resp == "success") {
             router.replace('/')
@@ -75,18 +123,13 @@ export default function NewPost(props) {
     }
 
     if (error) {
-        return (
-            <div className='text-center text-primary-text mt-[30vh] m-auto'>
-                <h1 className='text-6xl font-black'>500</h1>
-                <p className='mt-3 text-secondary-text text-lg'>There was a problem loading this page.</p>
-            </div>
-        )
+        return <ErrorPage error={error} />
     }
 
     return (
         <div className="mt-25 mb-15 px-15">
             <h1 className="text-primary-text text-2xl font-semibold whitespace-nowrap">
-                CREATE NEW POST
+                {isNewPost ? <>CREATE NEW POST</> : <>EDIT POST</>}
             </h1>
             <hr className='border-gold-accent mt-4 mb-10' />
 
@@ -124,7 +167,7 @@ export default function NewPost(props) {
                             type="file"
                             id="image"
                             name="image"
-                            accept="image/*"
+                            accept="image/png"
                             onChange={(e) => setImage(e.target.files[0])}
                             hidden
                         />
@@ -175,19 +218,15 @@ export default function NewPost(props) {
             <div className='flex justify-end'>
                 <div className='flex flex-col items-end gap-2'>
                     <button
-                    onClick={handleSaveClick}
-                    disabled={saveLoading}
-                    className='mt-8 p-2 px-4 w-15 bg-border cursor-pointer border-2 font-mono 
+                        onClick={handleSaveClick}
+                        disabled={loading}
+                        className='mt-8 p-2 px-4 w-15 bg-border cursor-pointer border-2 font-mono 
                     text-xs text-primary-text'
-                >
-                    SAVE
-                </button>
+                    >
+                        SAVE
+                    </button>
 
-                {saveError && <p className="font-mono text-red-600">An Error Occurred</p>}
-                {missingField == "title" && <p className="font-mono text-red-600">Missing Post Title</p>}
-                {missingField == "desc" && <p className="font-mono text-red-600">Missing Post Description</p>}
-                {missingField == "image" && <p className="font-mono text-red-600">Missing Post Image</p>}
-                {missingField == "content" && <p className="font-mono text-red-600">Missing Post Content</p>}
+                    {saveError && <p className="font-mono text-red-600">{saveError}</p>}
                 </div>
             </div>
         </div>

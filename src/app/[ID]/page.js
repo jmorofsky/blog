@@ -3,12 +3,19 @@ import { promises as fs } from 'fs'
 import Image from 'next/image'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { notFound } from 'next/navigation'
+import ErrorPage from '../_shared/ErrorPage'
+
 
 export default async function Post({ params }) {
     const { ID } = await params
 
     const db = new Database("./src/_db/posts.db", { fileMustExist: true })
     db.pragma('journal_mode = WAL')
+
+    if (isNaN(ID)) {
+        return notFound()
+    }
 
     const selectedPost = db.prepare(`SELECT Title, Date, Edited FROM posts WHERE ID = ${ID}`).get()
     if (selectedPost == undefined) {
@@ -29,12 +36,7 @@ export default async function Post({ params }) {
         const path = `./src/_assets/post_md/${ID}.md`
         postContent = await fs.readFile(path, 'utf8')
     } catch (error) {
-        return (
-            <div className='text-center text-primary-text mt-[30vh] m-auto'>
-                <h1 className='text-6xl font-black'>500</h1>
-                <p className='mt-3 text-secondary-text text-lg'>There was a problem loading this post.</p>
-            </div>
-        )
+        return <ErrorPage />
     }
 
     return (

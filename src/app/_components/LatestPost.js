@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { formatDate } from '../_common'
+import { formatDate } from '../_shared/common_funcs'
 
 export default function LatestPost(props) {
     const title = props.post.Title

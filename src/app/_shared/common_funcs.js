@@ -12,6 +12,18 @@ export function formatDate(date) {
     return `${month} ${day}, ${year}`
 }
 
+export function getCurrentDate() {
+    const today = new Date()
+    let month = today.getMonth() + 1
+    let day = today.getDate()
+    let year = today.getFullYear()
+
+    month = month < 10 ? '0' + month : month
+    day = day < 10 ? '0' + day : day
+
+    return `${month}/${day}/${year}`
+}
+
 function getOrdinalSuffix(n) {
     const s = ["th", "st", "nd", "rd"]
     const v = n % 100

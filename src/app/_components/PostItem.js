@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { formatDate } from '../_common'
+import { formatDate } from '../_shared/common_funcs'
 
 export default function PostItem(props) {
     const title = props.post.Title
