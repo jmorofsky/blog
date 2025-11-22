@@ -1,8 +1,12 @@
-import EditContainer from "./_components/EditContainer"
+import EditPost from './_components/EditPost';
+import NotFoundPage from '@/app/_shared/NotFoundPage';
 
 
-export default async function EditPost({ params }) {
-    const { ID } = await params
+export default async function EditPostContainer({ params }) {
+    const { ID } = await params;
+    if (isNaN(ID)) {
+        return <NotFoundPage />;
+    };
 
-    return <EditContainer ID={ID} />
-}
+    return <EditPost ID={ID} />;
+};

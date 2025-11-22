@@ -1,42 +1,74 @@
 'use client'
 
-import { useActionState } from "react"
-import { validatePassword } from "./sharedActions"
+import { useState } from 'react';
+import { validatePassword } from './sharedActions';
 
 
-export default function Authenticate(props) {
-    const updateHash = props.updateHash
+export default function Authenticate() {
+    const [password, setPassword] = useState('');
+    const [passwordIsValid, setPasswordIsValid] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [banned, setBanned] = useState(false);
+    const [attempts, setAttempts] = useState(0);
+    const [hash, setHash] = useState('');
 
-    const [passwordResponse, passwordAction, passwordPending] =
-        useActionState(validatePassword, { valid: false, error: false, banned: false, attempts: 0, hash: null })
+    function handleKeyDown(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
 
-    if (!passwordResponse.valid) {
+            setError(false);
+            setLoading(true);
+
+            validatePassword(password)
+                .then(response => {
+                    if (response == 'error') {
+                        setError(true);
+                    } else if (response == 'banned') {
+                        setBanned(true);
+                    } else if (typeof (response) == 'number') {
+                        setAttempts(response);
+                    } else {
+                        setPasswordIsValid(true);
+                        setHash(response);
+                    };
+                })
+                .catch(err => {
+                    setError(true);
+                })
+                .finally(() => { setLoading(false); setPassword('') });
+        };
+    };
+
+    if (!passwordIsValid) {
         return (
             <div className='m-auto mt-[30vh] w-50 text-primary-text'>
-                <form action={passwordAction} autoComplete="off">
-                    <p className="font-mono">Enter password:</p>
-                    <input
-                        type="password"
-                        disabled={passwordPending}
-                        name="password"
-                        maxLength="20"
-                        className="p-1 border-2"
-                        style={{ outline: "none" }}
-                    />
+                <p className='font-mono'>Enter password:</p>
+                <input
+                    type='password'
+                    disabled={loading}
+                    value={password}
+                    maxLength='20'
+                    className='p-1 border-2'
+                    style={{ outline: 'none' }}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e)}
+                />
 
-                    {
-                        passwordResponse.attempts > 0 &&
-                        passwordResponse.attempts <= 6 &&
-                        !passwordResponse.banned &&
-                        !passwordResponse.error &&
-                        <p className="font-mono">Attempt: {passwordResponse.attempts}</p>
-                    }
-                    {passwordResponse.error && <p className="font-mono text-red-600">Error</p>}
-                    {passwordResponse.banned && <p className="font-mono text-red-600">Banned</p>}
-                </form>
+                {banned ?
+                    <p className='font-mono text-red-600'>Banned</p>
+                    :
+                    error ?
+                        <p className='font-mono text-red-600'>Error</p>
+                        :
+                        attempts > 0 ?
+                            <p className='font-mono'>Attempt: {attempts}</p>
+                            :
+                            null
+                }
             </div>
-        )
+        );
     } else {
-        updateHash(passwordResponse.hash)
-    }
-}
+        return hash;
+    };
+};

@@ -1,29 +1,34 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import { formatDate } from '../_shared/common_funcs'
+'use client'
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { formatDate } from '../_shared/common_funcs';
+
 
 export default function LatestPost(props) {
-    const title = props.post.Title
-    const date = props.post.Date
-    const edited = props.post.Edited
-    const ID = props.post.ID
+    const id = props.post.ID;
+    const title = props.post.Title;
+    const description = props.post.Description;
+    const image = require(`@/_assets/post_images/${id}.png`);
+    const date = props.post.Date;
+    const edited = props.post.Edited;
 
     return (
-        <div className="flex flex-col row-span-2 p-3 
-        rounded-lg hover:bg-[#282828] hover:ring-4 hover:ring-[#202020] transition duration-150 max-[700px]:w-[90vw]">
-            <h1
-                className='text-primary-text text-xl font-semibold whitespace-nowrap'>
+        <div className='
+            p-3 rounded-lg hover:bg-[#282828] hover:ring-4 
+            hover:ring-[#202020] transition duration-150'
+        >
+            <h1 className='text-primary-text text-xl font-semibold'>
                 LATEST POST
             </h1>
-            <p
-                className='text-secondary-text text-sm text-left pt-1'>
+            <p className='text-secondary-text text-sm pt-1'>
                 WHAT I'VE BEEN DOING RECENTLY
             </p>
 
             <hr className='border-gold-accent mt-4 mb-4' />
 
-            <p className='font-mono text-secondary-text text-xs mb-4 max-[450px]:text-[10px]'>
-                🗓 {formatDate(date)}  {edited &&
+            <p className='font-mono text-secondary-text text-xs mb-4'>
+                🗓 {formatDate(date)} {edited &&
                     <em
                         className='text-accent'>
                         &emsp;[Edited: {formatDate(edited)}]
@@ -31,15 +36,17 @@ export default function LatestPost(props) {
                 }
             </p>
 
-            <Link href={`/${ID}`}>
+            <Link href={`/${id}`}>
                 <Image
-                    src={require(`../../_assets/post_images/${props.post.ID}.png`)}
+                    src={image}
                     alt=''
-                    className="h-120 w-160 mb-4 rounded-sm object-cover shadow-md shadow-accent"
-                    priority={false}
+                    className='mb-4 rounded-sm object-cover ring-4 ring-[#202020]'
                 />
-                <p className='text-primary-text text-3xl font-semibold'>{title}</p>
+
+                <p className='text-primary-text text-3xl font-semibold hover:underline'>{title}</p>
             </Link>
+
+            <p className='text-secondary-text mt-1'>{description}</p>
         </div>
-    )
-}
+    );
+};

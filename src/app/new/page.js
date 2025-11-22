@@ -1,20 +1,15 @@
 'use client'
 
-import { useState } from "react"
-import Authenticate from "../_shared/Authenticate"
-import PostCreator from "../_shared/PostCreator"
+import Authenticate from '../_shared/Authenticate';
+import PostCreator from '../_shared/PostCreator';
 
 
 export default function NewPost() {
-    const [hash, setHash] = useState("")
+    const authResult = Authenticate();
 
-    function updateHash(newHash) {
-        setHash(newHash)
-    }
-
-    if (!hash) {
-        return <Authenticate updateHash={updateHash} />
+    if (typeof(authResult) == 'string') {
+        return <PostCreator hash={authResult} />;
     } else {
-        return <PostCreator hash={hash} />
-    }
-}
+        return authResult;
+    };
+};
