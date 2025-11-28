@@ -23,6 +23,10 @@ export default function App() {
         postElements.push(<PostItem key={post.ID} post={post} />)
     };
 
+    if (!latestPost) {
+        return <ErrorPage error='No Posts' />;
+    };
+
     return (
         <div className='max-w-200'>
             <LatestPost post={latestPost} />

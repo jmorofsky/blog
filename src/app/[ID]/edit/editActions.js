@@ -29,9 +29,6 @@ export async function updatePost(postData) {
         const db = new Database("./src/_db/posts.db", { fileMustExist: true });
         db.pragma('journal_mode = WAL');
 
-        const md_path = `./src/_assets/post_md/${id}.md`;
-        await fs.writeFile(md_path, content);
-
         if (image) {
             const arrayBuffer = await image.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
@@ -41,14 +38,15 @@ export async function updatePost(postData) {
             await fs.writeFile(img_path, buffer);
         };
 
-        db.prepare(
-            `UPDATE posts SET 
-                Title = '${title}', 
-                Description = '${description}', 
-                Date = '${date}', 
-                Edited = '${edited}'
-            WHERE ID = '${id}'`
-        ).run();
+        const query = `UPDATE posts SET 
+                Title = ?, 
+                Description = ?, 
+                Content = ?, 
+                Date = ?, 
+                Edited = ? 
+            WHERE ID = ?`;
+
+        db.prepare(query).run(title, description, content, date, edited, id);
 
         return 'success';
     } catch {

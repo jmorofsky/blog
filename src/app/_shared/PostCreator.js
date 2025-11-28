@@ -181,7 +181,7 @@ export default function PostCreator(props) {
                                 className='
                                     p-1 font-mono text-xs border-2 
                                     text-primary-text cursor-pointer 
-                                    h-8 w-23 hover:text-secondary-text 
+                                    h-8 w-23 min-w-23 hover:text-secondary-text 
                                     transition duration-150'
                             >
                                 UPLOAD IMAGE

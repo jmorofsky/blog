@@ -3,7 +3,6 @@
 import Database from 'better-sqlite3';
 import { headers } from 'next/headers';
 import bcrypt from 'bcrypt';
-import { promises as fs } from 'fs';
 import { loadEnvFile } from 'node:process';
 
 
@@ -15,21 +14,18 @@ export async function getPostData(id) {
         db.pragma('journal_mode = WAL');
 
         const postData = db.prepare(
-            `SELECT Title, Description, Date, Edited FROM posts WHERE ID = ${id}`
+            `SELECT Title, Description, Date, Edited, Content FROM posts WHERE ID = ${id}`
         ).get();
 
         if (postData == undefined) {
             return 'notFound';
         };
 
-        const path = `./src/_assets/post_md/${id}.md`;
-        const postContent = await fs.readFile(path, 'utf8');
-
         const postObj = {
             id: id,
             title: postData.Title,
             description: postData.Description,
-            content: postContent,
+            content: postData.Content,
             date: postData.Date,
             edited: postData.Edited
         };
