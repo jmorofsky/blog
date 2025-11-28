@@ -1,9 +1,9 @@
 'use server'
 
 import Database from 'better-sqlite3';
-import { promises as fs } from 'fs';
 import { loadEnvFile } from 'node:process';
 import { getCurrentDate } from '../_shared/common_funcs';
+import { revalidatePath } from 'next/cache';
 
 
 loadEnvFile('./src/app/password.env');
@@ -20,7 +20,8 @@ export async function getNewPostID() {
         } else {
             return latest_id.ID + 1;
         };
-    } catch {
+    } catch (err) {
+        console.error('Error getting new post ID: ', err)
         return 'error';
     };
 };
@@ -42,18 +43,14 @@ export async function createNewPost(postData) {
             return 'error';
         };
 
-        const arrayBuffer = await image.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
+        const query = `INSERT INTO posts VALUES(?, ?, ?, ?, ?, ?, null)`;
+        db.prepare(query).run(id, title, description, content, image, date);
 
-        const img_path = `./src/_assets/post_images/${id}.png`;
-        await fs.writeFile(img_path, buffer);
-
-        const query = `INSERT INTO posts VALUES(?, ?, ?, ?, ?, null)`;
-
-        db.prepare(query).run(id, title, description, content, date);
+        revalidatePath('/');
 
         return 'success';
-    } catch {
+    } catch (err) {
+        console.error('Error creating post: ', err);
         return 'error';
     };
 };

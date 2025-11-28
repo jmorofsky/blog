@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { formatDate } from '../_shared/common_funcs';
 
@@ -9,7 +8,7 @@ export default function LatestPost(props) {
     const id = props.post.ID;
     const title = props.post.Title;
     const description = props.post.Description;
-    const image = require(`@/_assets/post_images/${id}.png`);
+    const image = props.post.Image;
     const date = props.post.Date;
     const edited = props.post.Edited;
 
@@ -37,7 +36,7 @@ export default function LatestPost(props) {
             </p>
 
             <Link href={`/${id}`}>
-                <Image
+                <img
                     src={image}
                     alt=''
                     className='mb-4 rounded-sm object-cover ring-4 ring-[#202020]'

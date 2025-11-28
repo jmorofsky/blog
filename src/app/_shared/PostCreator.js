@@ -19,6 +19,7 @@ export default function PostCreator(props) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
+    const [base64Image, setBase64Image] = useState(null);
     const [content, setContent] = useState('');
     const [date, setDate] = useState('');
     const [loading, setLoading] = useState(false);
@@ -51,6 +52,29 @@ export default function PostCreator(props) {
                 .catch(err => setError('getPostData'));
         };
     }, []);
+
+    function convertToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (err) => reject(err);
+        });
+    };
+
+    async function handleImageChange(e) {
+        const file = e.target.files[0];
+        if (file && file.type == 'image/png') {
+            setImage(file);
+
+            try {
+                const base64String = await convertToBase64(file);
+                setBase64Image(base64String);
+            } catch {
+                setError('handleImageChange');
+            };
+        };
+    };
 
     async function savePost() {
         if (!title) {
@@ -94,7 +118,7 @@ export default function PostCreator(props) {
                 id: id,
                 title: title,
                 description: description,
-                image: image,
+                image: base64Image,
                 content: content,
                 hash: hash
             };
@@ -111,7 +135,7 @@ export default function PostCreator(props) {
             };
 
             if (image) {
-                postData.image = image;
+                postData.image = base64Image;
             };
 
             resp = await updatePost(postData);
@@ -170,7 +194,7 @@ export default function PostCreator(props) {
                             type='file'
                             id='image'
                             accept='image/png'
-                            onChange={(e) => { setImage(e.target.files[0]) }}
+                            onChange={handleImageChange}
                             hidden
                         />
 

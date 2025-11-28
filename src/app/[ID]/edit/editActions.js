@@ -1,9 +1,9 @@
 'use server'
 
 import Database from 'better-sqlite3';
-import { promises as fs } from 'fs';
 import { loadEnvFile } from 'node:process';
 import { getCurrentDate } from '@/app/_shared/common_funcs';
+import { revalidatePath } from 'next/cache';
 
 
 loadEnvFile('./src/app/password.env');
@@ -30,26 +30,31 @@ export async function updatePost(postData) {
         db.pragma('journal_mode = WAL');
 
         if (image) {
-            const arrayBuffer = await image.arrayBuffer();
-            const buffer = Buffer.from(arrayBuffer);
-
-            const img_path = `./src/_assets/post_images/${id}.png`;
-
-            await fs.writeFile(img_path, buffer);
-        };
-
-        const query = `UPDATE posts SET 
+            const query = `UPDATE posts SET 
+                Title = ?, 
+                Description = ?, 
+                Content = ?, 
+                Image = ?,
+                Date = ?, 
+                Edited = ? 
+            WHERE ID = ?`;
+            db.prepare(query).run(title, description, content, image, date, edited, id);
+        } else {
+            const query = `UPDATE posts SET 
                 Title = ?, 
                 Description = ?, 
                 Content = ?, 
                 Date = ?, 
                 Edited = ? 
             WHERE ID = ?`;
+            db.prepare(query).run(title, description, content, date, edited, id);
+        };
 
-        db.prepare(query).run(title, description, content, date, edited, id);
+        revalidatePath('/');
 
         return 'success';
-    } catch {
+    } catch (err) {
+        console.error('Error updating post: ', err);
         return 'error';
     };
 };

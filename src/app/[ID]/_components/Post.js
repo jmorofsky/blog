@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { getPostData } from '@/app/_shared/sharedActions';
-import Image from 'next/image';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ErrorPage from '@/app/_shared/ErrorPage';
@@ -29,8 +28,8 @@ export default function Post(props) {
                     setNotFound(true);
                 } else {
                     setTitle(response.title);
-                    setImage(require(`@/_assets/post_images/${id}.png`));
                     setContent(response.content);
+                    setImage(response.image);
                     setDate(response.date);
                     setEdited(response.edited);
                 };
@@ -60,7 +59,7 @@ export default function Post(props) {
             <h1 className='text-primary-text text-3xl mb-5 min-[600px]:text-5xl'>{title}</h1>
 
             {image ?
-                <Image
+                <img
                     src={image}
                     alt=''
                     className='mb-8 rounded-sm object-cover ring-4 ring-[#202020]'

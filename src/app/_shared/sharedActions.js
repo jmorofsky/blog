@@ -14,7 +14,7 @@ export async function getPostData(id) {
         db.pragma('journal_mode = WAL');
 
         const postData = db.prepare(
-            `SELECT Title, Description, Date, Edited, Content FROM posts WHERE ID = ${id}`
+            `SELECT Title, Description, Content, Image, Date, Edited FROM posts WHERE ID = ${id}`
         ).get();
 
         if (postData == undefined) {
@@ -26,12 +26,14 @@ export async function getPostData(id) {
             title: postData.Title,
             description: postData.Description,
             content: postData.Content,
+            image: postData.Image,
             date: postData.Date,
             edited: postData.Edited
         };
 
         return postObj;
-    } catch {
+    } catch (err) {
+        console.error('Error getting post data: ', err);
         return 'error';
     };
 };
@@ -92,7 +94,8 @@ export async function validatePassword(password) {
                 return attempts;
             };
         };
-    } catch {
+    } catch (err) {
+        console.error('Error while validating password: ', err);
         return 'error';
     };
 };
