@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getPostData } from '@/app/_shared/sharedActions';
+import { formatDate } from '@/app/_shared/common_funcs';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ErrorPage from '@/app/_shared/ErrorPage';
@@ -50,12 +51,12 @@ export default function Post(props) {
     return (
         <div className='max-w-200'>
             <p className='text-secondary-text font-mono text-sm'>
-                🗓 {date}
+                🗓 {formatDate(date)}
                 {edited &&
-                    <em className='text-accent ml-4'>[Edited: {edited}]</em>
+                    <em className='text-accent ml-4'>[Edited: {formatDate(edited)}]</em>
                 }
             </p>
-            <hr className='mt-4 mb-1 text-gold-accent' />
+            <hr className='mt-4 mb-2 text-gold-accent' />
             <h1 className='text-primary-text text-3xl mb-5 min-[600px]:text-5xl'>{title}</h1>
 
             {image ?
