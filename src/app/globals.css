@@ -29,6 +29,10 @@
   color: #B0B0B0;
 }
 
+.prose code {
+  color: #673AB7;
+}
+
 .prose strong {
   font-weight: 700;
 }
